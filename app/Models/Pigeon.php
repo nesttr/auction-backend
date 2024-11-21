@@ -17,4 +17,9 @@ class Pigeon extends Model
         'sex',
         'sold',
     ];
+
+    public function images()
+    {
+        return $this->hasMany(PigeonImage::class, 'pigeon_id', 'id');
+    }
 }

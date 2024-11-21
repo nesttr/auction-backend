@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Auction;
 use Illuminate\Http\Request;
 
 class ExampleController extends Controller
 {
-    public function index()
+    public function index(string $uuid)
     {
-        return view('welcome');
+        $auction = Auction::query()->where('uuid', $uuid)->with('pigeon.images')->first();
+        return view('welcome',['auction'=>$auction]);
     }
 }

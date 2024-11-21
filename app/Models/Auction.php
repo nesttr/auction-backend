@@ -13,4 +13,9 @@ class Auction extends Model
         'start_date',
         'end_date',
     ];
+
+    public function pigeon()
+    {
+        return $this->hasOne(Pigeon::class, 'id', 'pigeon_id');
+    }
 }
