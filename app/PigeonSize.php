@@ -4,6 +4,7 @@ namespace App;
 
 enum PigeonSize : string
 {
+    use EnumHelper;
     case SMALL = 'small';
     case MEDIUM = 'medium';
     case LARGE = 'large';

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewUserRegister;
 use App\Helper;
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Repositories\UserRepository;
 
@@ -27,5 +28,18 @@ class AuthController extends Controller
             'message' => 'User registered successfully',
             'data' => $user
         ], 201);
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $credentials = $request->validated();
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
     }
 }

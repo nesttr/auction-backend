@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Profile extends Model
+class Auction extends Model
 {
     protected $fillable = [
+        'uuid',
         'user_id',
-        'nationality',
-        'address',
-        'about',
+        'pigeon_id',
+        'start_date',
+        'end_date',
     ];
 }

@@ -10,6 +10,7 @@
         "fgrosse/phpasn1": "^2.5",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.2",
         "laravel/tinker": "^2.9",
         "propaganistas/laravel-phone": "^5.3",
         "tymon/jwt-auth": "^2.1"
