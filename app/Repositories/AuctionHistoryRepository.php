@@ -2,28 +2,23 @@
 
 namespace App\Repositories;
 
-use App\Models\Auction;
+use App\Models\AuctionHistory;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\Uid\UuidV4;
 
-class AuctionRepository
+class AuctionHistoryRepository
 {
     protected Builder $builder;
 
     public function __construct(
-        private readonly Auction $auction
+        private readonly AuctionHistory $auction
     )
     {
         $this->builder = $this->auction->newQuery();
     }
 
-    public function find(string $uuid)
+    public function store(array $data): AuctionHistory
     {
-        return $this->builder->select('id')->where('uuid', $uuid)->first();
-    }
-    public function store(array $data): Auction
-    {
-        $data['uuid'] = new UuidV4();
         return $this->builder->create($data);
     }
 }

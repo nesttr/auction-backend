@@ -24,5 +24,5 @@ Route::group(['prefix' => 'news', 'middleware' => 'auth:api'], function () {
 });
 Route::group(['prefix' => 'auction', 'middleware' => 'auth:api'], function () {
     Route::post('/', [AuctionController::class, 'store']);
-    Route::post('/{uuid}/bid', [AuctionController::class, 'bid']);
+    Route::post('/{uuid}/bid', [AuctionController::class, 'bid'])->name('auction.bid');
 });
