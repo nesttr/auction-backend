@@ -9,10 +9,18 @@ class Auction extends Model
     protected $fillable = [
         'uuid',
         'user_id',
+        'start_bid',
         'pigeon_id',
         'start_date',
         'end_date',
     ];
+    protected function casts()
+    {
+        return [
+          'start_date' => 'datetime',
+          'end_date' => 'datetime'
+        ];
+    }
 
     public function pigeon()
     {

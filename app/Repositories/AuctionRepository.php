@@ -19,8 +19,19 @@ class AuctionRepository
 
     public function find(string $uuid)
     {
-        return $this->builder->select('id')->where('uuid', $uuid)->first();
+        return $this->builder
+            ->where('uuid', $uuid)
+            ->first();
     }
+
+    public function getId(string $uuid)
+    {
+        return $this->builder
+            ->select('id')
+            ->where('uuid', $uuid)
+            ->first();
+    }
+
     public function store(array $data): Auction
     {
         $data['uuid'] = new UuidV4();

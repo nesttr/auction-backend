@@ -33,6 +33,7 @@ class AuctionStoreRequest extends FormRequest
         return [
             'auction' => 'required|unique:auctions,pigeon_id,'.$this->auction,
             'user_id' => 'required',
+            'start_bid' => 'required|min:1',
             'pigeon_id' => 'required|exists:pigeons,id,user_id,' . $this->user_id,
             'start_date' => 'required|date|before:end_date|after:' . $startDate,
             'end_date' => 'required|date|after:' . $endDate

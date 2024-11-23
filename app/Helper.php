@@ -3,8 +3,8 @@
 namespace App;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class Helper
 {
@@ -26,5 +26,37 @@ class Helper
             $count++;
         }
         return $slug;
+    }
+
+    /**
+     * @param int $value
+     * @param array $thresholds
+     * @return void
+     */
+    public static function validateAndCalculateValue(int $value, array $thresholds):void
+    {
+        foreach ($thresholds as $range) {
+            [$min, $max, $increment] = $range;
+            if ($value >= $min && ($max == -1 || $value <= $max)) {
+                if ($value % $increment !== 0) {
+                    throw new InvalidArgumentException("Değer {$increment}'un katı olmalıdır.");
+                }
+                return;
+            }
+        }
+        throw new InvalidArgumentException("Değer geçersiz.");
+    }
+
+    public static function validateDateTime($startDateTime, $endDateTime): true
+    {
+        $input = Carbon::now();
+        if ($input->lt($startDateTime)) {
+            throw new InvalidArgumentException("Hata: Tarih ve saat başlangıç tarihinden küçük olamaz.");
+        }
+        if ($input->gt($endDateTime)) {
+            throw new InvalidArgumentException("Hata: Tarih ve saat bitiş tarihinden büyük olamaz.");
+        }
+
+        return true;
     }
 }

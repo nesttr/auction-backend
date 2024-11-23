@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Pigeon;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,14 +11,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('auctions', function (Blueprint $table) {
+        Schema::create('automatic_bids', function (Blueprint $table) {
             $table->id();
-            $table->uuid()->index();
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Pigeon::class);
-            $table->integer("start_bid")->default(0);
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
+            $table->foreignIdFor(\App\Models\Auction::class)->index();
+            $table->foreignIdFor(User::class)->index();
+            $table->integer('bid');
             $table->timestamps();
         });
     }
@@ -29,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('auctions');
+        Schema::dropIfExists('automatic_bids');
     }
 };
