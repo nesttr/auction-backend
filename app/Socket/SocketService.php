@@ -2,7 +2,6 @@
 
 namespace App\Socket;
 
-use App\Repositories\AuctionHistoryRepository;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 
@@ -13,7 +12,7 @@ class SocketService
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => 'https://b281-81-214-164-248.ngrok-free.app/',
+            'base_uri' => 'https://9140-81-214-164-248.ngrok-free.app/',
         ]);
     }
 

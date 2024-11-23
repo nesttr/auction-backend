@@ -2,57 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper;
 use App\Http\Requests\AuctionAutoBidRequest;
 use App\Http\Requests\AuctionBidRequest;
 use App\Http\Requests\AuctionStoreRequest;
-use App\Models\Auction;
-use App\Models\AuctionConfig;
-use App\Repositories\AuctionAutoBidRepository;
-use App\Repositories\AuctionHistoryRepository;
 use App\Repositories\AuctionRepository;
-use App\Socket\SocketService;
+use App\services\AuctionService;
 use Exception;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\JsonResponse;
 
 class AuctionController extends Controller
 {
-    protected AuctionConfig $config;
     public function __construct(
         public readonly AuctionRepository $auctionRepository,
-        public readonly AuctionHistoryRepository $auctionHistoryRepository,
-        public readonly SocketService            $socketService,
-        public readonly AuctionAutoBidRepository $auctionAutoBidRepository,
+        public readonly AuctionService    $auctionService
     )
     {
-        $this->config = Cache::get('auction.config');
+
     }
 
-    public function store(AuctionStoreRequest $request)
+    public function store(AuctionStoreRequest $request): JsonResponse
     {
         $data = $request->validated();
         $result = $this->auctionRepository->store($data);
         return response()->json($result, 201);
     }
 
-    public function autoBid(AuctionAutoBidRequest $request)
+    public function autoBid(AuctionAutoBidRequest $request): JsonResponse
     {
         try {
             $bid = $request->post('bid');
             $uuid = $request->post('auction');
             $userId = $request->post('user_id');
-            $auction = $this->auctionRepository->find($uuid);
-            $this->bidValidation(
-                $userId,
-                $auction,
-                $bid
-            );
-            $autoBidData = [
-                'user_id' => $userId,
-                'auction_id' => $auction->id,
-                'bid' => $bid,
-            ];
-            $this->auctionAutoBidRepository->updateOrCreate($autoBidData);
+            $this->auctionService->bid($userId, $uuid, $bid, true);
             return response()->json([], 201);
         } catch (Exception $exception) {
             return response()->json([
@@ -72,20 +53,7 @@ class AuctionController extends Controller
             $bid = $request->post('bid');
             $uuid = $request->post('auction');
             $userId = $request->post('user_id');
-            $auction = $this->auctionRepository->find($uuid);
-            $this->bidValidation(
-                $userId,
-                $auction,
-                $bid
-            );
-            $this->auctionHistoryRepository->store([
-                'auction_id' => $auction->id,
-                'bid' => $bid,
-                'user_id' => $userId,
-            ]);
-            $this->socketService->storeBid(
-                $request->post('auction')
-            );
+            $this->auctionService->bid($userId, $uuid, $bid);
             return response()->json([], 201);
 
         } catch (Exception $exception) {
@@ -100,13 +68,4 @@ class AuctionController extends Controller
         }
     }
 
-    protected function bidValidation(int $userId, Auction $auction, int $bid): void
-    {
-//      if (Auth::id() == $userId) throw new Exception('Kendi ihalenize pay veremezsiniz');
-        $limits = $this->config->limits;
-        $lastBid = $this->auctionHistoryRepository->lastBid($auction->id);
-        if ($bid <= $lastBid->bid) throw new Exception('En son payi gecmelisiniz');
-        Helper::validateAndCalculateValue($bid, $limits);
-        Helper::validateDateTime($auction->start_date, $auction->end_date);
-    }
 }

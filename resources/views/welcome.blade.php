@@ -32,24 +32,24 @@
         <input type="text" name="bid">
         <button type="submit" id="bid">Pey Ver</button>
     </form>
-    <br />
+    <br/>
     <form action="javascript:void(0)">
         <input type="text" name="automatic-bid">
-        <button type="submit" id="automatic-bid">Pey Ver</button>
+        <button type="submit" id="automatic-bid">Otomatik Pey Ver</button>
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{{ asset('js/countdown.js') }}"></script>
 <script>
     const endDate = new Date('{{ $auction->end_date->format('Y-m-d H:i:s') }}');
-    countdown('#demo',endDate, function () {
+    countdown('#demo', endDate, function () {
         console.log('done');
     })
 </script>
 <script type="module">
     import {io} from "https://cdn.socket.io/4.8.0/socket.io.esm.min.js";
 
-    const jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzMyMzA5MjI4LCJleHAiOjE3MzIzMTI4MjgsIm5iZiI6MTczMjMwOTIyOCwianRpIjoiYklsbHJPVGNkcmFITDRLbSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.soee0qcNnZ8y6nN8yrwK7XJAVYq2iaeJBiVsrNHyX-8";
+    const jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzMyMzU1NTE0LCJleHAiOjE3MzIzNTkxMTQsIm5iZiI6MTczMjM1NTUxNCwianRpIjoiOE50WUpjc2U4YTdGQlpkSSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.TCnaVwTMWosF3Yz0tEtQ2WtDOX5dS3aLe9fCoSTaT7w";
     const uuid = "{{ $auction->uuid }}"
     const url = "ws://localhost:3000";
     const socket = io(url);
@@ -72,7 +72,7 @@
                 'Authorization': `Bearer ${jwt}`,
             },
             data: {
-                bid:bid
+                bid: bid
             },
             success: function () {
                 $("input[name=bid]").val('')
@@ -88,7 +88,7 @@
                 'Authorization': `Bearer ${jwt}`,
             },
             data: {
-                bid:bid
+                bid: bid
             },
             success: function () {
                 $("input[name=bid]").val('')
