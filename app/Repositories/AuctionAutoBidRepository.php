@@ -21,6 +21,7 @@ class AuctionAutoBidRepository
     {
         return $this->builder->select(['user_id','bid','auction_id'])
             ->where('auction_id', $id)
+            ->orderBy('bid')
             ->get();
     }
 

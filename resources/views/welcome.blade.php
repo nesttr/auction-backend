@@ -16,7 +16,8 @@
     }
 </style>
 <div class="history">
-
+    <input type="text" name="token" value="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzMyMzcyMDU1LCJleHAiOjE3MzIzNzU2NTUsIm5iZiI6MTczMjM3MjA1NSwianRpIjoiMURiaElRYUNwY2hleVJnVyIsInN1YiI6IjUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.NUgldYVL1QzMgMNXPKttup-YEtUNk7Un6zHiMQgyDg8">
+    <hr>
     <img src="/{{ $auction->pigeon->images[0]->path }}" class="image" alt=""/>
     <h3>{{ $auction->pigeon->code }}</h3>
     <p>Ana Adı : {{ $auction->pigeon->mother_name }}</p>
@@ -49,7 +50,7 @@
 <script type="module">
     import {io} from "https://cdn.socket.io/4.8.0/socket.io.esm.min.js";
 
-    const jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0L2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzMyMzU1NTE0LCJleHAiOjE3MzIzNTkxMTQsIm5iZiI6MTczMjM1NTUxNCwianRpIjoiOE50WUpjc2U4YTdGQlpkSSIsInN1YiI6IjEiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.TCnaVwTMWosF3Yz0tEtQ2WtDOX5dS3aLe9fCoSTaT7w";
+    const jwt = $('input[name=token]').val()
     const uuid = "{{ $auction->uuid }}"
     const url = "ws://localhost:3000";
     const socket = io(url);

@@ -12,7 +12,7 @@ class SocketService
     public function __construct()
     {
         $this->client = new Client([
-            'base_uri' => 'https://9140-81-214-164-248.ngrok-free.app/',
+            'base_uri' => env('SOCKET_URL'),
         ]);
     }
 

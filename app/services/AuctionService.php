@@ -9,6 +9,7 @@ use App\Repositories\AuctionHistoryRepository;
 use App\Repositories\AuctionRepository;
 use App\Socket\SocketService;
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 
 class AuctionService
@@ -37,12 +38,7 @@ class AuctionService
     {
 //      if (Auth::id() == $userId) throw new Exception('Kendi ihalenize pay veremezsiniz');
         $auction = $this->auctionRepository->find($uuid);
-        $autoBidList =  $this->auctionAutoBidRepository->getByAuctionId($auction->id);
-        foreach ($autoBidList as $autoBid) {
-
-        }
         Helper::validateDateTime($auction->start_date, $auction->end_date);
-
         $lastBidResult = $this->auctionHistoryRepository->lastBid($auction->id);
         $lastBid = $lastBidResult->bid ?? 0;
         Helper::validateAndCalculateValue($lastBid, $bid, $this->config->limits);
@@ -57,10 +53,62 @@ class AuctionService
             $this->auctionAutoBidRepository->updateOrCreate($data);
             $data['bid'] = $nextBid;
         }
-        $this->auctionHistoryRepository->store($data);
+//        $this->auctionHistoryRepository->store($data);
+//        $this->socketService->storeBid(
+//            $auction->uuid
+//        );
+        $autoBidList = $this->auctionAutoBidRepository->getByAuctionId($auction->id);
+        $this->automationBig($autoBidList, $lastBid);
+    }
 
-        $this->socketService->storeBid(
-            $auction->uuid
-        );
+    protected function automationBig($bidders, int $currentBid)
+    {
+        $bidders = $bidders->toArray();
+        $limits = $this->config->limits;
+        $result = [];
+        $round = 0; // Artırma tur sayacı
+        while (true) {
+            // Artırma yapabilecek kullanıcıları filtrele
+            $eligibleBidders = array_filter($bidders, function ($bidder) use ($currentBid, $limits) {
+                $increment = Helper::getMinimumIncrement($limits, $currentBid);
+                return $currentBid + $increment <= $bidder['bid'];
+            });
+            // Eğer artırma yapabilecek kimse kalmadıysa döngüyü sonlandır
+            if (empty($eligibleBidders)) {
+                break;
+            }
+            // Artırma yapabilecek kullanıcılar arasında sırayla işlem yap
+            foreach ($eligibleBidders as $bidder) {
+                $increment = Helper::getMinimumIncrement($limits, $currentBid);
+                // Kullanıcının sınırını kontrol et ve artırmayı gerçekleştir
+                if ($currentBid + $increment <= $bidder['bid']) {
+                    $currentBid += $increment;
+                    $result[] = [
+                        'round' => ++$round,
+                        'user_id' => $bidder['user_id'],
+                        'bid' => $currentBid,
+                        'auction_id' => $bidder['auction_id'],
+                    ];
+                }
+                // Eğer artırma yapacak başka kimse kalmadıysa döngüyü sonlandır
+                $remainingEligibleBidders = array_filter($eligibleBidders, function ($bidder) use ($currentBid, $limits) {
+                    $increment = Helper::getMinimumIncrement($limits, $currentBid);
+                    return [$bidder['user_id'],$currentBid + $increment <= $bidder['bid']];
+                });
+                if (count($remainingEligibleBidders) == 1) {
+//                    $first = Arr::first( $remainingEligibleBidders);
+//                    $currentBid += $increment;
+//                    $result[] = [
+//                        'round' => ++$round,
+//                        'user_id' => $first['user_id'],
+//                        'bid' => $currentBid,
+//                        'auction_id' => $bidder['auction_id'],
+//                    ];
+                    break 2;
+                }
+            }
+        }
+        dd($result);
+        return $result;
     }
 }
